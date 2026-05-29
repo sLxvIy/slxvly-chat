@@ -5,10 +5,47 @@
 </head>
 <body>
     <div id="app">
-        <div id="chat-display"></div>
-        <input type="text" id="msg-input" placeholder="Type message...">
+        <div id="chat-box"></div>
+        <input id="input" placeholder="Type here...">
         <button onclick="sendMessage()">Send</button>
     </div>
-    <script src="script.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0CkErMn_ZP6wYID7vRSYnONHwDmDLDJ0",
+            authDomain: "slxvly-chat.firebaseapp.com",
+            databaseURL: "https://slxvly-chat-default-rtdb.firebaseio.com",
+            projectId: "slxvly-chat",
+            storageBucket: "slxvly-chat.firebasestorage.app",
+            messagingSenderId: "258097209076",
+            appId: "1:258097209076:web:2f4e53123f84fb58aa08a1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const chatRef = ref(db, 'chat');
+
+        window.sendMessage = () => {
+            const input = document.getElementById('input');
+            if(input.value.trim() !== "") {
+                push(chatRef, { text: input.value });
+                input.value = '';
+            }
+        };
+
+        onChildAdded(chatRef, (data) => {
+            const msg = data.val().text;
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<p>${msg}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
+            
+            if (msg.toLowerCase().includes("brayden") || msg.toLowerCase().includes("layah")) {
+                new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
+            }
+        });
+    </script>
 </body>
 </html>
